@@ -34,9 +34,9 @@ contract MemeCoin {
 
     // spender 接受者 : _allowances[address(this)][bob] = 500;
     function approve(address spender, uint256 amount) public returns (bool) {
-        _approve(msg.sender, spender, amount); 
+        _approve(msg.sender, spender, amount);
 
-        return true; 
+        return true;
     }
 
     // 查询函数
@@ -47,16 +47,9 @@ contract MemeCoin {
     function transferFrom(address from, address to, uint256 amount) public returns (bool) {
         uint256 currentAllowance = _allowances[from][msg.sender];
 
-       require(
-        currentAllowance >= amount,
-        "ALLOWANCE NOT ENOUGH"
-    );
+        require(currentAllowance >= amount, "ALLOWANCE NOT ENOUGH");
 
-         _approve(
-        from,
-        msg.sender,
-        currentAllowance - amount
-    );
+        _approve(from, msg.sender, currentAllowance - amount);
 
         _transfer(from, to, amount);
 
@@ -75,7 +68,7 @@ contract MemeCoin {
     }
 
     // 重构approve
-    function _approve(address owner, address spender, uint256 amount ) internal {
+    function _approve(address owner, address spender, uint256 amount) internal {
         require(owner != address(0), "APPROVE FROM ZERO ADDRESS");
         require(spender != address(0), "APPROVE TO ZERO ADDRESS");
 
