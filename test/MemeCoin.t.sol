@@ -112,4 +112,38 @@ contract MemeCoinTest is Test {
 
         token.approve(address(0), 100);
     }
+
+    // transferFrom() 转到零地址的测试
+    function testTransferFromFailsWhenToIsZeroAddress() public {
+        // 1. 给 Alice 1000
+        token.transfer(alice, 1000);
+
+        // 2. Alice approve Bob 500
+        vm.prank(alice);
+        token.approve(bob, 500);
+
+        // 3. 预期 "TRANSFER TO ZERO ADDRESS"
+        vm.expectRevert("TRANSFER TO ZERO ADDRESS");
+
+        // 4. 让 Bob 调用：
+        // transferFrom(alice, address(0), 200)
+        vm.prank(bob);
+        token.transferFrom(alice, address(0), 200);
+    }
+
+    // allowance足够, 但是balance不够
+    function testTransferFromFailsWhenBalanceNotEnough() public {
+    // Alice 只有 100
+    token.transfer(alice, 100);
+
+    // Alice 却允许 Bob 最多动 500
+    vm.prank(alice);
+    token.approve(bob, 500);
+
+    // Bob 想动 200
+    vm.prank(bob);
+    vm.expectRevert("BALANCE NOT ENOUGH");
+
+    token.transferFrom(alice, charlie, 200);
+}
 }
