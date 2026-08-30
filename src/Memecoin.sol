@@ -6,12 +6,15 @@ contract MemeCoin {
     // 写出ERC声明
     event Transfer(address indexed from, address indexed to, uint256 value);
 
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+
     string public name = "Miyuki meme coin";
     string public symbol = "MIYU";
 
     uint256 public totalSupply = 1_000_000;
 
     mapping(address => uint256) private _balances;
+    mapping(address => mapping(address => uint256)) private _allowances;
 
     constructor() {
         _balances[msg.sender] = totalSupply;
@@ -33,5 +36,19 @@ contract MemeCoin {
         emit Transfer(msg.sender, to, amount);
 
         return true;
+    }
+
+    // spender 接受者 : _allowances[address(this)][bob] = 500;
+    function approve(address spender, uint256 amount) public returns (bool) {
+        _allowances[msg.sender][spender] = amount;
+
+        emit Approval(msg.sender, spender, amount);
+
+        return true;
+    }
+
+    // 查询函数
+    function allowance(address owner, address spender) public view returns (uint256) {
+        return _allowances[owner][spender];
     }
 }

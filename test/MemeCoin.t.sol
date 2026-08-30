@@ -52,4 +52,19 @@ contract MemeCoinTest is Test {
 
         token.transfer(bob, 100);
     }
+
+    function testApprove() public {
+        bool success = token.approve(bob, 500);
+
+        assertTrue(success);
+        assertEq(token.allowance(address(this), bob), 500);
+    }
+
+    function testApproveEmitsEvent() public {
+        vm.expectEmit(true, true, false, true);
+
+        emit Approval(address(this), bob, 500);
+
+        token.approve(bob, 500);
+    }
 }
