@@ -19,7 +19,7 @@ contract MemeCoinTest is Test {
     }
 
     function testInitialSupplyBelongsToDeployer() public {
-        assertEq(token.balanceOf(address(this)), token.totalSupply);
+        assertEq(token.balanceOf(address(this)), token.totalSupply());
     }
 
     function testTransfer() public {
