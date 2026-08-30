@@ -19,20 +19,20 @@ contract MemeCoinTest is Test {
     }
 
     function testInitialSupplyBelongsToDeployer() public {
-        assertEq(token.balanceOf(address(this)), 1_000_000);
+        assertEq(token.balanceOf(address(this)), token.totalSupply);
     }
 
     function testTransfer() public {
         token.transfer(alice, 100);
 
         assertEq(token.balanceOf(alice), 100);
-        assertEq(token.balanceOf(address(this)), 999_900);
+        assertEq(token.balanceOf(address(this)), token.totalSupply() - 100);
     }
 
     function testTransferFailsWhenBalanceNotEnough() public {
         uint256 senderBalanceBefore = token.balanceOf(address(this));
 
-        vm.expectRevert("NOT ENOUGH AMOUNT");
+        vm.expectRevert("BALANCE NOT ENOUGH");
 
         token.transfer(bob, senderBalanceBefore + 1);
     }
@@ -86,6 +86,7 @@ contract MemeCoinTest is Test {
         assertEq(token.allowance(alice, bob), 300);
     }
 
+    // 授权余额不足的错误test
     function testTransferFromFailsWhenAllowanceNotEnough() public {
         token.transfer(alice, 1000);
 
@@ -96,5 +97,19 @@ contract MemeCoinTest is Test {
         vm.expectRevert("ALLOWANCE NOT ENOUGH");
 
         token.transferFrom(alice, charlie, 200);
+    }
+
+    // 测试收款地址不能是零地址
+    function testTransferFailsWhenToIsZeroAddress() public {
+        vm.expectRevert("TRANSFER TO ZERO ADDRESS");
+
+        token.transfer(address(0), 100);
+    }
+
+    // 测试不能把账户授权给零地址
+    function testApproveFailsWhenSpenderIsZeroAddress() public {
+        vm.expectRevert("APPROVE TO ZERO ADDRESS");
+
+        token.approve(address(0), 100);
     }
 }

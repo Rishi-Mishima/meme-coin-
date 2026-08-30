@@ -11,7 +11,7 @@ contract MemeCoin {
     string public name = "Miyuki meme coin";
     string public symbol = "MIYU";
 
-    uint256 public totalSupply = 1_000_000;
+    uint256 public totalSupply = 1_000_000 * 10 ** 18;
 
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) private _allowances;
@@ -27,22 +27,14 @@ contract MemeCoin {
     }
 
     function transfer(address to, uint256 amount) public returns (bool) {
-        require(_balances[msg.sender] >= amount, "NOT ENOUGH AMOUNT");
-
-        _balances[msg.sender] -= amount;
-        _balances[to] += amount;
-
-        // 记录一条链上日志：谁给谁转了多少币。
-        emit Transfer(msg.sender, to, amount);
+        _transfer(msg.sender, to, amount);
 
         return true;
     }
 
     // spender 接受者 : _allowances[address(this)][bob] = 500;
     function approve(address spender, uint256 amount) public returns (bool) {
-        _allowances[msg.sender][spender] = amount;
-
-        emit Approval(msg.sender, spender, amount);
+        _approve(msg.sender, spender, amount);
 
         return true;
     }
@@ -53,18 +45,33 @@ contract MemeCoin {
     }
 
     function transferFrom(address from, address to, uint256 amount) public returns (bool) {
-        require(_balances[from] >= amount, "BALANCE NOT ENOUGH");
-
         require(_allowances[from][msg.sender] >= amount, "ALLOWANCE NOT ENOUGH");
-
-        _balances[from] -= amount;
-        _balances[to] += amount;
 
         // _allowances[owner][spender]
         _allowances[from][msg.sender] -= amount;
 
-        emit Transfer(from, to, amount);
+        _transfer(from, to, amount);
 
         return true;
+    }
+
+    function _transfer(address from, address to, uint256 amount) internal {
+        require(from != address(0), "TRANSFER FROM ZERO ADDRESS");
+        require(to != address(0), "TRANSFER TO ZERO ADDRESS");
+        require(_balances[from] >= amount, "BALANCE NOT ENOUGH");
+
+        _balances[from] -= amount;
+        _balances[to] += amount;
+
+        emit Transfer(from, to, amount);
+    }
+
+    // 重构approve
+    function _approve(address owner, address spender, uint256 amount) internal {
+        require(owner != address(0), "APPROVE FROM ZERO ADDRESS");
+        require(spender != address(0), "APPROVE TO ZERO ADDRESS");
+
+        _allowances[owner][spender] = amount;
+        emit Approval(owner, spender, amount);
     }
 }
