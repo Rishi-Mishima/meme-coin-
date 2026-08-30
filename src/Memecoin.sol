@@ -22,7 +22,7 @@ contract MemeCoin {
 
     // 实现ERC-20标准函数
     // account 是address里有多少钱, amount是转的钱
-    function balancesOf(address account) public view returns (uint256) {
+    function balanceOf(address account) public view returns (uint256) {
         return _balances[account];
     }
 
@@ -50,5 +50,21 @@ contract MemeCoin {
     // 查询函数
     function allowance(address owner, address spender) public view returns (uint256) {
         return _allowances[owner][spender];
+    }
+
+    function transferFrom(address from, address to, uint256 amount) public returns (bool) {
+        require(_balances[from] >= amount, "BALANCE NOT ENOUGH");
+
+        require(_allowances[from][msg.sender] >= amount, "ALLOWANCE NOT ENOUGH");
+
+        _balances[from] -= amount;
+        _balances[to] += amount;
+
+        // _allowances[owner][spender]
+        _allowances[from][msg.sender] -= amount;
+
+        emit Transfer(from, to, amount);
+
+        return true;
     }
 }
