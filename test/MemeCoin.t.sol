@@ -7,6 +7,7 @@ import {MemeCoin} from "../src/Memecoin.sol";
 contract MemeCoinTest is Test {
     event Transfer(address indexed from, address indexed to, uint256 value);
 
+    event Approval(address indexed owner, address indexed spender, uint256 value);
     MemeCoin token;
 
     address alice = address(0xA11CE);
