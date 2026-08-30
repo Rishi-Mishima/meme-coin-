@@ -20,4 +20,5 @@ contract MemeCoin{
         balances[msg.sender] -= amount;
         balances[to] += amount;
     }
+
 }

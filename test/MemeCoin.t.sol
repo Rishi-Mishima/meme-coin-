@@ -25,4 +25,24 @@ contract MemeCoinTest is Test{
         assertEq(token.balances(address(this)), 999_900);
     }
 
+    function testTransferFailsWhenBalanceNotEnough() public {
+        
+        uint256 senderBalanceBefore = token.balances(address(this));
+        uint256 bobBalanceBefore = token.balances(bob);
+
+        vm.expectRevert("NOT ENOUGH AMOUNT");
+
+        token.transfer(bob, senderBalanceBefore + 1); 
+
+        assertEq(
+            token.balances(address(this)), 
+            senderBalanceBefore
+        ); 
+
+        assertEq(
+        token.balances(bob),
+        bobBalanceBefore
+        );
+    }
+
 }
